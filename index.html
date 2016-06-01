@@ -1,0 +1,23 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Machina Test</title>
+        <link rel="stylesheet" type="text/css" href="main.css" />
+        <script src="lodash.js"></script>
+        <script src="jquery.js"></script>
+        <script src="knockout.js"></script>
+        <script src="machina.js"></script>
+        <script src="main.js"></script>
+    </head>
+    <body>
+        <div id="app">
+            <div data-bind="template: { name: 'app-template', data: $root }"></div>
+        </div>
+        <script type="text/html" id="app-template">
+            <h1>My App</h1>
+            <div data-bind="text: text">Blah!</div>
+        </script>
+    </body>
+</html>
+
