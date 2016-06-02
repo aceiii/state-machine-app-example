@@ -3,6 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <title>Machina Test</title>
+        <link rel="stylesheet" type="text/css" href="normalize.css" />
         <link rel="stylesheet" type="text/css" href="main.css" />
         <script src="lodash.js"></script>
         <script src="jquery.js"></script>
@@ -15,8 +16,61 @@
             <div data-bind="template: { name: 'app-template', data: $root }"></div>
         </div>
         <script type="text/html" id="app-template">
-            <h1>My App</h1>
-            <div data-bind="text: text">Blah!</div>
+            <div data-bind="visible: state() === 'loading'">
+                <div data-bind="template: { name: 'loading-template' }"></div>
+            </div>
+            <div data-bind="visible: state() === 'lookup', template: { name: 'lookup-template', data: $root }"></div>
+            <div data-bind="visible: state() === 'details', template: { name: 'details-template' }"></div>
+            <div data-bind="visible: state() === 'confirm', template: { name: 'confirm-template' }"></div>
+            <div data-bind="visible: state() === 'processed', template: { name: 'processed-template' }"></div>
+            <div data-bind="visible: state() === 'failure', template: { name: 'failure-template' }"></div>
+        </script>
+        <script type="text/html" id="loading-template">
+            <div>Loading...</div>
+        </script>
+        <script type="text/html" id="lookup-template">
+            <form data-bind="submit: lookup">
+                <div data-bind="visible: error">
+                    <p data-bind="text: error"></p>
+                </div>
+                <input type="text" data-bind="value: accountNumber" /><br />
+                <button type="submit">Lookup</button>
+            </form>
+        </script>
+        <script type="text/html" id="details-template">
+            <div>
+                <h1>Account Details</h1>
+                <div data-bind="text: accountNumber"></div>
+                <div data-bind="text: balance"></div>
+                <div data-bind="text: amountDue"></div>
+            </div>
+            <div>
+                <form data-bind="submit: confirm">
+                    <input type="text" maxlength="20" data-bind="value: paymentAmount" />
+                    <br />
+                    <button type="submit">Confirm Payment</button>
+                </form>
+            </div>
+        </script>
+        <script type="text/html" id="confirm-template">
+            <form data-bind="submit: payment">
+                <h1>Confirm Payment</h1>
+                <div data-bind="text: accountNumber"></div>
+                <div data-bind="text: paymentAmount"></div>
+                <br />
+                <button type="submit">Submit Payment</button>
+                <button type="button">Cancel</button>
+            </form>
+        </script>
+        <script type="text/html" id="processed-template">
+            <h1>Payment Processed Successfully</h1>
+            <div>You've made a payment for $<span data-bind="text: paymentAmount"></span> to account number: <span data-bind="text: accountNumber"></span></div>
+            <button type="button" data-bind="click: reset">Start Over</button>
+        </script>
+        <script type="text/html" id="failure-template">
+            <h1>Payment Processing Failed</h1>
+            <div data-bind="text: error"></div>
+            <button type="button" data-bind="click: reset">Start Over</button>
         </script>
     </body>
 </html>
