@@ -60,6 +60,8 @@
                             <form data-bind="submit: confirm">
                                 <input type="text" maxlength="20" data-bind="value: paymentAmount" />
                                 <br />
+                                <div>+ $<span data-bind="text: fee"></span></div>
+                                <div>$<span data-bind="text: totalAmount"></span></div>
                                 <button type="submit">Confirm Payment</button>
                             </form>
                         </div>
@@ -68,7 +70,7 @@
             </div>
         </script>
         <script type="text/html" id="confirm-template">
-            <div class="main-content">
+            <div class="confirm main-content">
                 <div class="content-body">
                     <div class="content-body-inner">
                         <form data-bind="submit: payment">
@@ -84,7 +86,7 @@
             </div>
         </script>
         <script type="text/html" id="success-template">
-            <div class="main-content">
+            <div class="success main-content">
                 <div class="content-body">
                     <div class="content-body-inner">
                         <h1>Payment Processed Successfully</h1>
@@ -95,7 +97,7 @@
             </div>
         </script>
         <script type="text/html" id="failure-template">
-            <div class="main-content">
+            <div class="falure main-content">
                 <div class="content-body">
                     <div class="content-body-inner">
                         <h1>Payment Processing Failed</h1>

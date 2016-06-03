@@ -11,6 +11,7 @@ var Reqs = {
                     accountNumber: accountNumber,
                     balance: 10.01,
                     amountDue: 10.01,
+                    fee: 1.50,
                 });
             } else {
                 console.log("rejecting lookup", accountNumber);
@@ -68,8 +69,17 @@ var DetailsViewModel = function(statemgr, obj) {
     this.accountNumber = obj.accountNumber;
     this.balance = obj.balance;
     this.amountDue = obj.amountDue;
+    this.fee = obj.fee;
 
     this.paymentAmount = ko.observable();
+
+    this.totalAmount = ko.computed(function() {
+        var t = +(ko.unwrap(this.paymentAmount)) + ko.unwrap(this.fee);
+        if (isNaN(t)) {
+            return 0;
+        }
+        return t;
+    }, this);
 
     this.confirm = function() {
         this.statemgr.submit(ko.toJS(this));
