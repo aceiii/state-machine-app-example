@@ -5,7 +5,7 @@ var Reqs = {
         var d = $.Deferred();
 
         setTimeout(function () {
-            if (accountNumber.indexOf("12345") > -1) {
+            if ((accountNumber || "").indexOf("12345") > -1) {
                 console.log("resolving lookup", accountNumber);
                 d.resolve({
                     accountNumber: accountNumber,
