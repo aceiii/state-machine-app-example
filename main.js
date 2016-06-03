@@ -15,7 +15,7 @@ var Reqs = {
             } else {
                 console.log("rejecting lookup", accountNumber);
                 d.reject({
-                    error: "Account not found.",
+                    error: "Account (" + accountNumber + ") not found.",
                 });
             }
         }, Reqs.defaultTimeout);
@@ -42,34 +42,94 @@ var Reqs = {
     },
 };
 
+var LoadingViewModel = function() {
+    this.template = "loading-template";
+};
+
+var LookupViewModel = function(statemgr) {
+    this.template = "lookup-template";
+    this.statemgr = statemgr;
+
+    this.error = ko.observable();
+    this.accountNumber = ko.observable();
+
+    this.lookup = function() {
+        this.statemgr.submit(this.accountNumber());
+    }.bind(this);
+};
+
+var DetailsViewModel = function(statemgr, obj) {
+    this.template = "details-template";
+    this.statemgr = statemgr;
+
+    obj = ko.toJS(obj || {});
+
+    console.log("details", obj);
+    this.accountNumber = obj.accountNumber;
+    this.balance = obj.balance;
+    this.amountDue = obj.amountDue;
+
+    this.paymentAmount = ko.observable();
+
+    this.confirm = function() {
+        this.statemgr.submit(ko.toJS(this));
+    }.bind(this);
+
+    this.back = function() {
+        this.statemgr.cancel();
+    }.bind(this);
+};
+
+var ConfirmViewModel = function(statemgr, obj) {
+    this.template = "confirm-template";
+    this.statemgr = statemgr;
+
+    obj = ko.toJS(obj || {});
+
+    this.accountNumber = obj.accountNumber;
+    this.paymentAmount = obj.paymentAmount;
+
+    this.payment = function() {
+        this.statemgr.submit(obj);
+    }.bind(this);
+
+    this.cancel = function() {
+        this.statemgr.cancel();
+    }.bind(this);
+};
+
+var SuccessViewModel = function(statemgr, obj) {
+    this.template = "success-template";
+    this.statemgr = statemgr;
+
+    obj = obj || {};
+
+    console.log("success", obj);
+
+    this.accountNumber = obj.accountNumber;
+    this.paymentAmount = obj.paymentAmount;
+
+    this.reset = function() {
+        this.statemgr.reset();
+    }.bind(this);
+};
+
+var FailureViewModel = function(statemgr, obj) {
+    this.template = "failure-template";
+    this.statemgr = statemgr;
+
+    obj = obj || {};
+
+    this.error = obj.error;
+
+    this.reset = function() {
+        this.statemgr.reset();
+    }.bind(this);
+};
+
 var App = machina.Fsm.extend({
     initialize: function(options) {
-        this.viewmodel = {
-            state: ko.observable(),
-            error: ko.observable(),
-            accountNumber: ko.observable(),
-            balance: ko.observable(),
-            amountDue: ko.observable(),
-            paymentAmount: ko.observable(),
-
-            lookup: function() {
-                this.lookup(this.viewmodel.accountNumber());
-                return false;
-            }.bind(this),
-
-            payment: function() {
-                this.payment(ko.toJS(this.viewmodel));
-                return false;
-            }.bind(this),
-
-            confirm: function() {
-                this.confirm();
-            }.bind(this),
-
-            reset: function() {
-                this.reset();
-            }.bind(this),
-        };
+        this.viewmodel = ko.observable();
     },
     namespace: "state-app",
     initialState: "uninitialized",
@@ -82,7 +142,7 @@ var App = machina.Fsm.extend({
         },
         loading: {
             _onEnter: function() {
-                this.viewmodel.state("loading");
+                this.viewmodel(new LoadingViewModel(this));
             },
             _onExit: function() {
                 clearTimeout(this.timeout);
@@ -97,74 +157,81 @@ var App = machina.Fsm.extend({
         },
         lookup: {
             _onEnter: function() {
-                this.viewmodel.state("lookup");
+                this.viewmodel(new LookupViewModel(this));
             },
-            submit: "searching",
-            reset: function() {
-                this.viewmodel.error(null);
-                this.viewmodel.accountNumber(null);
-                this.viewmodel.balance(null);
-                this.viewmodel.amountDue(null);
-                this.viewmodel.paymentAmount(null);
+            submit: function(obj) {
+                Reqs.lookup(obj).then(this.success.bind(this), this.error.bind(this));
+                this.transition("searching");
+            },
+            error: function(obj) {
+                this.viewmodel().error(obj.error);
             },
         },
         searching: {
             _onEnter: function() {
-                this.viewmodel.state("loading");
+                this.viewmodel(new LoadingViewModel(this));
             },
             success: function(obj) {
-                this.viewmodel.accountNumber(obj.accountNumber);
-                this.viewmodel.balance(obj.balance);
-                this.viewmodel.amountDue(obj.amountDue);
+                this.deferUntilTransition();
                 this.transition("details");
             },
             error: function(obj) {
-                console.log(arguments);
-                this.viewmodel.error(obj.error);
+                this.deferUntilTransition();
                 this.transition("lookup");
             },
         },
         details: {
-            _onEnter: function() {
-                this.viewmodel.state("details");
+            submit: function(obj) {
+                this.transition("confirm");
             },
-            submit: "confirm",
+            success: function(obj) {
+                this.viewmodel(new DetailsViewModel(this, obj));
+            },
+            cancel: function() {
+                this.transition("lookup");
+            },
         },
         confirm: {
             _onEnter: function() {
-                this.viewmodel.state("confirm");
+                this._details = this.viewmodel();
+                this.viewmodel(new ConfirmViewModel(this, this._details));
             },
-            submit: "processing",
+            submit: function(obj) {
+                this._paymentData = obj;
+                Reqs.payment(obj).then(this.success.bind(this), this.error.bind(this));
+                this.transition("processing");
+            },
+            cancel: function() {
+                delete this._paymentData;
+                this.viewmodel(this._details);
+                this.transition("details");
+            },
         },
         processing: {
             _onEnter: function() {
-                this.viewmodel.state("loading");
+                this.viewmodel(new LoadingViewModel(this));
             },
             success: function(obj) {
+                this.deferUntilTransition();
                 this.transition("processed");
             },
             error: function(obj) {
-                this.transition("failure");
+                this.deferUntilTransition();
+                this.transition("processed");
             },
         },
         processed: {
-            _onEnter: function() {
-                this.viewmodel.state("processed");
+            success: function(obj) {
+                this.viewmodel(new SuccessViewModel(this, obj));
+            },
+            error: function(obj) {
+                this.viewmodel(new FailureViewModel(this, obj));
             },
             reset: function() {
                 this.deferUntilTransition();
                 this.transition("lookup");
             },
         },
-        failure: {
-            _onEnter: function() {
-                this.viewmodel.state("failure");
-            },
-            reset: function() {
-                this.deferUntilTransition();
-                this.transition("lookup");
-            },
-        }
     },
     reset: function() {
         this.handle("reset");
@@ -172,40 +239,17 @@ var App = machina.Fsm.extend({
     start: function() {
         this.handle("start");
     },
-    lookup: function(accountNumber) {
-        console.log("performing lookup on account: " + accountNumber);
-        Reqs.lookup(accountNumber)
-            .then(function(obj) {
-                this.handle("success", obj);
-            }.bind(this), function(obj) {
-                this.handle("error", obj);
-            }.bind(this))
-            .catch(function(e) {
-                console.error(arguments);
-                this.handle("error", {
-                    error: e.toString(),
-                });
-            });
-        this.handle("submit");
+    success: function(obj) {
+        this.handle("success", obj);
     },
-    payment: function(data) {
-        console.log("performing payment on account:", data.accountNumber, "for amount:", data.paymentAmount);
-        Reqs.payment(data)
-            .then(function(obj) {
-                this.handle("success", obj);
-            }.bind(this), function(obj) {
-                this.handle("error", obj);
-            }.bind(this))
-            .catch(function(e) {
-                console.log(arguments);
-                this.handle("error", {
-                    error: e.toString(),
-                });
-            });
-        this.handle("submit");
+    error: function(obj) {
+        this.handle("error", obj);
     },
-    confirm: function() {
-        this.handle("submit");
+    submit: function(data) {
+        this.handle("submit", data);
+    },
+    cancel: function() {
+        this.handle("cancel");
     },
     reset: function() {
         this.handle("reset");
@@ -221,7 +265,7 @@ $(function () {
 
     window.my_app = my_app;
     console.log(my_app);
-    ko.applyBindings(my_app.viewmodel, document.getElementById("app"));
+    ko.applyBindings(my_app, document.getElementById("app"));
     console.log("start!");
     my_app.start();
 });

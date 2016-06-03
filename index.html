@@ -13,18 +13,10 @@
     </head>
     <body>
         <div id="app">
-            <div data-bind="template: 'app-template'"></div>
-        </div>
-        <script type="text/html" id="app-template">
-            <div data-bind="visible: state() === 'loading'">
-                <div data-bind="template: 'loading-template'"></div>
+            <div data-bind="with: viewmodel">
+                <div data-bind="template: template"></div> 
             </div>
-            <div data-bind="visible: state() === 'lookup', template: 'lookup-template'"></div>
-            <div data-bind="visible: state() === 'details', template: 'details-template'"></div>
-            <div data-bind="visible: state() === 'confirm', template: 'confirm-template'"></div>
-            <div data-bind="visible: state() === 'processed', template: 'processed-template'"></div>
-            <div data-bind="visible: state() === 'failure', template: 'failure-template'"></div>
-        </script>
+        </div>
         <script type="text/html" id="loading-template">
             <div>Loading...</div>
         </script>
@@ -38,6 +30,11 @@
             </form>
         </script>
         <script type="text/html" id="details-template">
+            <div>
+                <a href="#" data-bind="click: back">
+                    Back
+                </a>
+            </div>
             <div>
                 <h1>Account Details</h1>
                 <div data-bind="text: accountNumber"></div>
@@ -59,10 +56,10 @@
                 <div data-bind="text: paymentAmount"></div>
                 <br />
                 <button type="submit">Submit Payment</button>
-                <button type="button">Cancel</button>
+                <button type="button" data-bind="click: cancel">Cancel</button>
             </form>
         </script>
-        <script type="text/html" id="processed-template">
+        <script type="text/html" id="success-template">
             <h1>Payment Processed Successfully</h1>
             <div>You've made a payment for $<span data-bind="text: paymentAmount"></span> to account number: <span data-bind="text: accountNumber"></span></div>
             <button type="button" data-bind="click: reset">Start Over</button>
