@@ -32,6 +32,7 @@ button {
     border: 1px solid #98b1d6;
     border-radius: 5px;
     box-sizing: border-box;
+    cursor: pointer;
 }
 
 button:hover, button:focus {
