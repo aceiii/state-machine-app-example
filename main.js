@@ -26,11 +26,14 @@ var Reqs = {
 
     payment: function(data) {
         var d = $.Deferred();
+        var fee = 1.50;
 
         setTimeout(function() {
             if (data.paymentAmount > 0 && data.paymentAmount <= 10.01) {
                 d.resolve({
                     accountNumber: data.accountNumber,
+                    paymentAmount: data.paymentAmount,
+                    totalAmount: data.paymentAmount + fee,
                 });
             } else {
                 d.reject({
@@ -119,6 +122,7 @@ var SuccessViewModel = function(statemgr, obj) {
 
     this.accountNumber = obj.accountNumber;
     this.paymentAmount = obj.paymentAmount;
+    this.totalAmount = obj.totalAmount;
 
     this.reset = function() {
         this.statemgr.reset();
