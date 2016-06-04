@@ -19,51 +19,65 @@
         </div>
         <script type="text/html" id="loading-template">
             <div class="loading main-content">
-                <div class="content-body">
-                    <div class="content-body-inner">
-                        <p>Loading...</p>
+                <div class="main-content-inner">
+                    <div class="content-body">
+                        <div class="content-body-inner">
+                            <p>Loading...</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </script>
         <script type="text/html" id="lookup-template">
             <div class="lookup main-content">
-                <div class="content-body">
-                    <div class="content-body-inner">
-                        <form class="lookup-form" data-bind="submit: lookup">
-                            <div class="lookup-error" data-bind="visible: error">
-                                <p data-bind="text: error"></p>
-                            </div>
-                            <input type="text" data-bind="value: accountNumber" /><br />
-                            <button type="submit">Lookup</button>
-                        </form>
+                <div class="main-content-inner">
+                    <div class="content-head">
+                        <h1 class="title">Lookup</h1>
+                    </div>
+                    <div class="content-body">
+                        <div class="content-body-inner">
+                            <form class="lookup-form" data-bind="submit: lookup">
+                                <div class="lookup-error" data-bind="visible: error">
+                                    <p data-bind="text: error"></p>
+                                </div>
+                                <label class="input">
+                                    <span class="label">Account Number</span>
+                                    <input type="text" data-bind="value: accountNumber" />
+                                </label>
+                                <button type="submit">Lookup</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
         </script>
         <script type="text/html" id="details-template">
             <div class="details main-content">
-                <div class="content-body">
-                    <div class="content-body-inner">
-                        <div class="back-button">
-                            <button type="button" data-bind="click: back">
-                                Back
-                            </button>
-                        </div>
-                        <div class="account-details">
-                            <h1>Account Details</h1>
-                            <div data-bind="text: accountNumber"></div>
-                            <div data-bind="text: balance"></div>
-                            <div data-bind="text: amountDue"></div>
-                        </div>
-                        <div class="payment-details">
-                            <form data-bind="submit: confirm">
-                                <input type="text" maxlength="20" data-bind="value: paymentAmount" />
-                                <br />
-                                <div>+ $<span data-bind="text: fee"></span></div>
-                                <div>$<span data-bind="text: totalAmount"></span></div>
-                                <button type="submit">Confirm Payment</button>
-                            </form>
+                <div class="main-content-inner">
+                    <div class="content-head">
+                        <h1 class="title">Account Details</h1>
+                    </div>
+                    <div class="content-body">
+                        <div class="content-body-inner">
+                            <div class="back-button">
+                                <button type="button" data-bind="click: back">
+                                    Back
+                                </button>
+                            </div>
+                            <div class="account-details">
+                                <div data-bind="text: accountNumber"></div>
+                                <div data-bind="text: balance"></div>
+                                <div data-bind="text: amountDue"></div>
+                            </div>
+                            <div class="payment-details">
+                                <form data-bind="submit: confirm">
+                                    <input type="text" maxlength="20" data-bind="value: paymentAmount" />
+                                    <br />
+                                    <div>+ $<span data-bind="text: fee"></span></div>
+                                    <div>$<span data-bind="text: totalAmount"></span></div>
+                                    <button type="submit">Confirm Payment</button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -71,27 +85,36 @@
         </script>
         <script type="text/html" id="confirm-template">
             <div class="confirm main-content">
-                <div class="content-body">
-                    <div class="content-body-inner">
-                        <form data-bind="submit: payment">
-                            <h1>Confirm Payment</h1>
-                            <div data-bind="text: accountNumber"></div>
-                            <div data-bind="text: paymentAmount"></div>
-                            <br />
-                            <button type="submit">Submit Payment</button>
-                            <button type="button" data-bind="click: cancel">Cancel</button>
-                        </form>
+                <div class="main-content-inner">
+                    <div class="content-head">
+                        <h1 class="title">Confirm Payment</h1>
+                    </div>
+                    <div class="content-body">
+                        <div class="content-body-inner">
+                            <form data-bind="submit: payment">
+                                <div data-bind="text: accountNumber"></div>
+                                <div data-bind="text: paymentAmount"></div>
+                                <br />
+                                <button type="submit">Submit Payment</button>
+                                <button type="button" data-bind="click: cancel">Cancel</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
         </script>
         <script type="text/html" id="success-template">
             <div class="success main-content">
-                <div class="content-body">
-                    <div class="content-body-inner">
-                        <h1>Payment Processed Successfully</h1>
-                        <div>You've made a payment for $<span data-bind="text: paymentAmount"></span> to account number: <span data-bind="text: accountNumber"></span></div>
-                        <button type="button" data-bind="click: reset">Start Over</button>
+                <div class="main-content-inner">
+                    <div class="content-head">
+                        <h1 class="title">Payment Processed</h1>
+                    </div>
+                    <div class="content-body">
+                        <div class="content-body-inner">
+                            <p>Your payment was processed successfully!</p>
+                            <p>You've made a payment for $<span data-bind="text: paymentAmount"></span> to account <span data-bind="text: accountNumber"></span></p>
+                            <button type="button" data-bind="click: reset">Start Over</button>
+                        </div>
                     </div>
                 </div>
             </div>
