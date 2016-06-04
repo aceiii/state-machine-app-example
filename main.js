@@ -75,14 +75,14 @@ var DetailsViewModel = function(statemgr, obj) {
     this.amountDue = obj.amountDue;
     this.fee = obj.fee;
 
-    this.paymentAmount = ko.observable();
+    this.paymentAmountInput = ko.observable();
 
-    this.totalAmount = ko.computed(function() {
-        var t = +(ko.unwrap(this.paymentAmount)) + ko.unwrap(this.fee);
-        if (isNaN(t)) {
-            return 0;
-        }
-        return t;
+    this.paymentAmount = ko.pureComputed(function() {
+        return +(ko.unwrap(this.paymentAmountInput)) || 0;
+    }, this);
+
+    this.totalAmount = ko.pureComputed(function() {
+        return ko.unwrap(this.paymentAmount) + ko.unwrap(this.fee);
     }, this);
 
     this.confirm = function() {
@@ -102,6 +102,8 @@ var ConfirmViewModel = function(statemgr, obj) {
 
     this.accountNumber = obj.accountNumber;
     this.paymentAmount = obj.paymentAmount;
+    this.fee = obj.fee;
+    this.totalAmount = obj.totalAmount;
 
     this.payment = function() {
         this.statemgr.submit(obj);

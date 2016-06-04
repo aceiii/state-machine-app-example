@@ -72,7 +72,7 @@
                                 </div>
                                 <div class="payment-details">
                                     <form data-bind="submit: confirm">
-                                        <input type="text" maxlength="20" data-bind="value: paymentAmount" />
+                                        <input type="text" maxlength="20" data-bind="value: paymentAmountInput" />
                                         <br />
                                         <div>+ $<span data-bind="text: fee"></span></div>
                                         <div>$<span data-bind="text: totalAmount"></span></div>
@@ -97,8 +97,10 @@
                     <div class="content-body">
                         <div class="content-body-inner">
                             <form data-bind="submit: payment">
-                                <div data-bind="text: accountNumber"></div>
-                                <div data-bind="text: paymentAmount"></div>
+                                <div>Account Number: <span data-bind="text: accountNumber"></span></div>
+                                <div>Payment Amount: <span data-bind="text: paymentAmount"></span></div>
+                                <div>Fee: <span data-bind="text: fee"></span></div>
+                                <div>Total: <span data-bind="text: totalAmount"></span></div>
                                 <br />
                                 <button type="submit">Submit Payment</button>
                                 <button type="button" data-bind="click: cancel">Cancel</button>
