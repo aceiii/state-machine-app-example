@@ -13,6 +13,11 @@
     </head>
     <body>
         <div id="app">
+            <section class="header">
+                <div class="brand">
+                    <h1 class="title">APP</h1>
+                </div>
+            </section>
             <div data-bind="with: viewmodel">
                 <div data-bind="template: template"></div> 
             </div>
@@ -59,24 +64,24 @@
                     </div>
                     <div class="content-body">
                         <div class="content-body-inner">
-                            <div class="back-button">
-                                <button type="button" data-bind="click: back">
-                                    Back
-                                </button>
-                            </div>
-                            <div class="account-details">
-                                <div data-bind="text: accountNumber"></div>
-                                <div data-bind="text: balance"></div>
-                                <div data-bind="text: amountDue"></div>
-                            </div>
-                            <div class="payment-details">
-                                <form data-bind="submit: confirm">
-                                    <input type="text" maxlength="20" data-bind="value: paymentAmount" />
-                                    <br />
-                                    <div>+ $<span data-bind="text: fee"></span></div>
-                                    <div>$<span data-bind="text: totalAmount"></span></div>
-                                    <button type="submit">Confirm Payment</button>
-                                </form>
+                            <div class="details-container">
+                                <div class="account-details">
+                                    <div data-bind="text: accountNumber"></div>
+                                    <div data-bind="text: balance"></div>
+                                    <div data-bind="text: amountDue"></div>
+                                </div>
+                                <div class="payment-details">
+                                    <form data-bind="submit: confirm">
+                                        <input type="text" maxlength="20" data-bind="value: paymentAmount" />
+                                        <br />
+                                        <div>+ $<span data-bind="text: fee"></span></div>
+                                        <div>$<span data-bind="text: totalAmount"></span></div>
+                                        <div class="payment-actions">
+                                            <button type="submit">Confirm Payment</button>
+                                            <button type="button" data-bind="click: back">Cancel</button>
+                                        </div>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -121,11 +126,13 @@
         </script>
         <script type="text/html" id="failure-template">
             <div class="falure main-content">
-                <div class="content-body">
-                    <div class="content-body-inner">
-                        <h1>Payment Processing Failed</h1>
-                        <div data-bind="text: error"></div>
-                        <button type="button" data-bind="click: reset">Start Over</button>
+                <div class="main-content-inner">
+                    <div class="content-body">
+                        <div class="content-body-inner">
+                            <h1>Payment Processing Failed</h1>
+                            <div data-bind="text: error"></div>
+                            <button type="button" data-bind="click: reset">Start Over</button>
+                        </div>
                     </div>
                 </div>
             </div>
