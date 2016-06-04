@@ -43,8 +43,9 @@ var Reqs = {
     },
 };
 
-var LoadingViewModel = function() {
+var LoadingViewModel = function(text) {
     this.template = "loading-template";
+    this.text = text || "Loading...";
 };
 
 var LookupViewModel = function(statemgr) {
@@ -152,7 +153,7 @@ var App = machina.Fsm.extend({
         },
         loading: {
             _onEnter: function() {
-                this.viewmodel(new LoadingViewModel(this));
+                this.viewmodel(new LoadingViewModel("Loading..."));
             },
             _onExit: function() {
                 clearTimeout(this.timeout);
@@ -179,7 +180,7 @@ var App = machina.Fsm.extend({
         },
         searching: {
             _onEnter: function() {
-                this.viewmodel(new LoadingViewModel(this));
+                this.viewmodel(new LoadingViewModel("Searching..."));
             },
             success: function(obj) {
                 this.deferUntilTransition();
@@ -219,7 +220,7 @@ var App = machina.Fsm.extend({
         },
         processing: {
             _onEnter: function() {
-                this.viewmodel(new LoadingViewModel(this));
+                this.viewmodel(new LoadingViewModel("Processing..."));
             },
             success: function(obj) {
                 this.deferUntilTransition();
