@@ -52,7 +52,7 @@ var LookupViewModel = function(statemgr) {
     this.statemgr = statemgr;
 
     this.error = ko.observable();
-    this.accountNumber = ko.observable();
+    this.accountNumber = ko.observable("");
 
     this.lookup = function() {
         this.statemgr.submit(this.accountNumber());
